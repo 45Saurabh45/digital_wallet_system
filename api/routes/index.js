@@ -1,7 +1,9 @@
 import express from "express";
-import {registerUser, loginUser, checkBalance, addFunds, getUserDetails, withDrawFunds,
-    transactionHistory, transferFunds, setDefaultCurrency, setTransactionLimit, detectFraud} from "../controller/index.js";
-import {authenticateUser, apiLimiter} from "../middleware/index.js";
+import {
+    registerUser, loginUser, checkBalance, addFunds, getUserDetails, withDrawFunds,
+    transactionHistory, transferFunds, setDefaultCurrency, setTransactionLimit, detectFraud
+} from "../controller/index.js";
+import { authenticateUser, apiLimiter } from "../middleware/index.js";
 
 const router = express.Router();
 
