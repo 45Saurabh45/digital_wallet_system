@@ -1,0 +1,449 @@
+{
+	"info": {
+		"_postman_id": "47f2c4a7-2570-4f07-a9b2-a4fa879a617a",
+		"name": "Digital Wallet CodeGama",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41545384"
+	},
+	"item": [
+		{
+			"name": "Register User",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Testing wallet\",\r\n  \"email\": \"walletTesting@gmail.com\",\r\n  \"password\": \"Saurabh@123\",\r\n  \"currency\": \"INR\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTRmNzEzZWU4YWY0YWQ0YTM0ZjExOCIsImlhdCI6MTczODk1MzkzMSwiZXhwIjoxNzM4OTU3NTMxfQ.Y08sJzaRLyXAjqiMqVXn-kmWwv6eIel_bMDHWuKdcOg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"10c.saurabhtiwari123@gmail.com\",\r\n  \"password\": \"Saurabh@123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User Details",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTRmNzEzZWU4YWY0YWQ0YTM0ZjExOCIsImlhdCI6MTczODg2NTI0NiwiZXhwIjoxNzM4ODY4ODQ2fQ.ns7VCM7OsxDWU-7SYKm8Ir8xtd16CM37uVLSsCCxiCo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/getUser",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"getUser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Wallet Amount",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTRmNzEzZWU4YWY0YWQ0YTM0ZjExOCIsImlhdCI6MTczODk1MDg4NiwiZXhwIjoxNzM4OTU0NDg2fQ.Vl_KKVcTUiXR0vXWyC2qxI2jFxNjgMegCxRPUnNWe44",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"amount\": 10000\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/add",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check Balance",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTRmNzEzZWU4YWY0YWQ0YTM0ZjExOCIsImlhdCI6MTczODk1MDg4NiwiZXhwIjoxNzM4OTU0NDg2fQ.Vl_KKVcTUiXR0vXWyC2qxI2jFxNjgMegCxRPUnNWe44",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/balance",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"balance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "With Draw Funds",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTRmNzEzZWU4YWY0YWQ0YTM0ZjExOCIsImlhdCI6MTczODk1MDg4NiwiZXhwIjoxNzM4OTU0NDg2fQ.Vl_KKVcTUiXR0vXWyC2qxI2jFxNjgMegCxRPUnNWe44",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"amount\": 2000\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/withDraw",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"withDraw"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Transaction History",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTRmNzEzZWU4YWY0YWQ0YTM0ZjExOCIsImlhdCI6MTczODk1Mzk0MSwiZXhwIjoxNzM4OTU3NTQxfQ.mDuyHAc9y1F20DVXlM0C0ohNnhitUOFDRiRN3RGzxss",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/transactionHistory",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"transactionHistory"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Funds Transfer",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTRmNzEzZWU4YWY0YWQ0YTM0ZjExOCIsImlhdCI6MTczODk1MDg4NiwiZXhwIjoxNzM4OTU0NDg2fQ.Vl_KKVcTUiXR0vXWyC2qxI2jFxNjgMegCxRPUnNWe44",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"receiverId\": \"67a5048c001a4eb896b7bc7e\",\r\n    \"amount\": 1000\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/transfer",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"transfer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set Default Currency",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTRmNzEzZWU4YWY0YWQ0YTM0ZjExOCIsImlhdCI6MTczODk1MDg4NiwiZXhwIjoxNzM4OTU0NDg2fQ.Vl_KKVcTUiXR0vXWyC2qxI2jFxNjgMegCxRPUnNWe44",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"currency\": \"INR\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/setDefaultCurrency",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"setDefaultCurrency"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set Transaction Limit",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTRmNzEzZWU4YWY0YWQ0YTM0ZjExOCIsImlhdCI6MTczODk1MDg4NiwiZXhwIjoxNzM4OTU0NDg2fQ.Vl_KKVcTUiXR0vXWyC2qxI2jFxNjgMegCxRPUnNWe44",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"limit\":\"1000\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/setTransactionLimit",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"setTransactionLimit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fraud Detection",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTRmNzEzZWU4YWY0YWQ0YTM0ZjExOCIsImlhdCI6MTczODk1Mzk0MSwiZXhwIjoxNzM4OTU3NTQxfQ.mDuyHAc9y1F20DVXlM0C0ohNnhitUOFDRiRN3RGzxss",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"threshold\": 1000,\r\n  \"timeFrameMinutes\": 60\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/detectFraud",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"detectFraud"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTRmNzEzZWU4YWY0YWQ0YTM0ZjExOCIsImlhdCI6MTczODg2NTY3OSwiZXhwIjoxNzM4ODY5Mjc5fQ.Pgbu2yvayNXVBWCOAM4WbS5t8zfpsnRC3ThPuZAjFKo",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { WalletUser, Wallet, Transaction } from "../models/index.js";
+import axios from "axios";
 
 const sceret = process.env.JWT_SECRET || 'secretKey'
 // **User Registration**
@@ -60,7 +61,7 @@ export const checkBalance = async (req, res) => {
   res.json({ balance: wallet.balance, currency: wallet.currency });
 };
 
-// Add Funds to Wallet
+//add funds
 export const addFunds = async (req, res) => {
     try {
         const { amount } = req.body;
@@ -75,12 +76,33 @@ export const addFunds = async (req, res) => {
             return res.status(404).json({ message: "Wallet not found" });
         }
 
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const todayTransactions = await Transaction.aggregate([
+            {
+                $match: {
+                    sender: userId,
+                    transactionType: "credit",
+                    timestamp: { $gte: today }
+                }
+            },
+            { $group: { _id: null, total: { $sum: "$amount" } } }
+        ]);
+
+        const todayTotal = todayTransactions.length > 0 ? todayTransactions[0].total : 0;
+        const dailyLimit = wallet.dailyTransactionLimit  
+
+        if (todayTotal + amount > dailyLimit) {
+            return res.status(400).json({ message: "Daily transaction limit exceeded" });
+        }
+
         wallet.balance += amount;
         await wallet.save();
 
         await Transaction.create({
             user: userId,
-            sender: userId, 
+            sender: userId,
             amount,
             transactionType: "credit",
             status: "completed",
@@ -93,6 +115,7 @@ export const addFunds = async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
+
 
 // Withdraw Funds
 export const withDrawFunds = async (req, res) => {
@@ -113,11 +136,32 @@ export const withDrawFunds = async (req, res) => {
             return res.status(400).json({ message: "Insufficient balance" });
         }
 
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const todayTransactions = await Transaction.aggregate([
+            {
+                $match: {
+                    sender: userId,
+                    transactionType: "debit",
+                    timestamp: { $gte: today }
+                }
+            },
+            { $group: { _id: null, total: { $sum: "$amount" } } }
+        ]);
+
+        const todayTotal = todayTransactions.length > 0 ? todayTransactions[0].total : 0;
+        const dailyLimit = wallet.dailyTransactionLimit 
+
+        if (todayTotal + amount > dailyLimit) {
+            return res.status(400).json({ message: "Daily transaction limit exceeded" });
+        }
+
         wallet.balance -= amount;
         await wallet.save();
 
         await Transaction.create({
-            user: userId, 
+            user: userId,
             sender: userId,
             amount,
             transactionType: "debit",
@@ -180,6 +224,27 @@ export const transferFunds = async (req, res) => {
             return res.status(404).json({ message: "Receiver wallet not found" });
         }
 
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const todayTransactions = await Transaction.aggregate([
+            {
+                $match: {
+                    sender: senderId,
+                    transactionType: "debit",
+                    timestamp: { $gte: today }
+                }
+            },
+            { $group: { _id: null, total: { $sum: "$amount" } } }
+        ]);
+
+        const todayTotal = todayTransactions.length > 0 ? todayTransactions[0].total : 0;
+        const dailyLimit = senderWallet.dailyTransactionLimit
+
+        if (todayTotal + amount > dailyLimit) {
+            return res.status(400).json({ message: "Daily transaction limit exceeded" });
+        }
+
         senderWallet.balance -= amount;
         receiverWallet.balance += amount;
 
@@ -212,3 +277,110 @@ export const transferFunds = async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
+
+
+// Set default currency and update amount
+export const setDefaultCurrency = async (req, res) => {
+    try {
+        const { currency } = req.body;
+        const userId = req.user._id;
+        const supportedCurrencies = ["USD", "EUR", "INR", "GBP"];
+
+        if (!supportedCurrencies.includes(currency)) {
+            return res.status(400).json({ message: "Invalid currency selection" });
+        }
+
+        const wallet = await Wallet.findOne({ user: userId });
+        if (!wallet) {
+            return res.status(404).json({ message: "Wallet not found" });
+        }
+
+        if (wallet.currency === currency) {
+            return res.status(200).json({ message: `Your default currency is already set to ${currency}` });
+        }
+
+        // Fetch exchange rate to convert balance
+        const exchangeRateAPI = `https://api.exchangerate-api.com/v4/latest/${wallet.currency}`;
+        const response = await axios.get(exchangeRateAPI);
+        const rate = response.data.rates[currency];
+
+        if (!rate) {
+            return res.status(400).json({ message: "Exchange rate not available" });
+        }
+
+        const convertedBalance = wallet.balance * rate;
+        wallet.currency = currency;
+        wallet.balance = convertedBalance;
+        await wallet.save();
+
+        res.status(200).json({
+            message: `Currency updated to ${currency} and balance converted`,
+            newBalance: convertedBalance,
+            exchangeRate: rate
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+//set daily limit
+export const setTransactionLimit = async (req, res) => {
+    try {
+        const { limit } = req.body;
+        const userId = req.user._id;
+
+        if (!limit || limit <= 0) {
+            return res.status(400).json({ message: "Invalid limit amount" });
+        }
+
+        const wallet = await Wallet.findOne({ user: userId });
+        if (!wallet) {
+            return res.status(404).json({ message: "Wallet not found" });
+        }
+
+        wallet.dailyTransactionLimit = limit;
+        await wallet.save();
+
+        res.status(200).json({ message: `Transaction limit set to ${limit}` });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+//detect fraud
+export const detectFraud = async (req, res) => {
+    const { threshold, timeFrameMinutes } = req.body;
+    const timeFrame = new Date(Date.now() - timeFrameMinutes * 60 * 1000); 
+    console.log(timeFrame)
+    try {
+
+      const suspiciousTransactions = await Transaction.find({
+        amount: { $gte: threshold },
+        timestamp: { $gte: timeFrame }
+      })
+        .sort({ timestamp: 1 })
+        .populate('user'); 
+  
+      if (suspiciousTransactions.length > 0) {
+        return res.status(200).json({
+          suspicious: true,
+          message: `Multiple high-value transactions detected within the past ${timeFrameMinutes} minutes.`,
+          transactions: suspiciousTransactions.map((transaction) => ({
+            transactionId: transaction._id,
+            amount: transaction.amount,
+            timestamp: transaction.timestamp,
+            user: transaction.user._id,
+            name: transaction.user.name,
+            email: transaction.user.email,
+          })),
+        });
+      }
+  
+      return res.status(200).json({
+        suspicious: false,
+        message: 'No suspicious activity detected.'
+      });
+    } catch (error) {
+      return res.status(500).json({ message: 'Error detecting suspicious activity', error });
+    }
+}

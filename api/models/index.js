@@ -17,7 +17,10 @@ const WalletSchema = new mongoose.Schema(
     {
         user: { type: mongoose.Schema.Types.ObjectId, ref: "WalletUser", required: true },
         balance: { type: Number, default: 0 },
-        currency: { type: String, default: "USD", required: true },
+        currency: { type: String, enum: ["USD", "EUR", "INR", "GBP"], default: "INR", required: true },
+        dailyTransactionLimit: { type: Number, default: 10000 }, 
+        lastTransactionTime: { type: Date }, 
+        totalTransactionsToday: { type: Number, default: 0 }, 
     },
     { timestamps: true }
 );
@@ -37,31 +40,11 @@ const TransactionSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-// Fraud Detection Schema
-const FraudDetectionSchema = new mongoose.Schema(
-    {
-        user: { type: mongoose.Schema.Types.ObjectId, ref: "WalletUser", required: true },
-        dailyTransactionLimit: { type: Number, default: 10000 }, // $10,000 max per day
-        recentTransactions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Transaction" }],
-        flagged: { type: Boolean, default: false },
-    },
-    { timestamps: true }
-);
 
-// API Rate Limit Schema
-const ApiRateLimitSchema = new mongoose.Schema(
-    {
-        user: { type: mongoose.Schema.Types.ObjectId, ref: "WalletUser", required: true },
-        requestCount: { type: Number, default: 0 },
-        lastRequest: { type: Date, default: Date.now },
-    },
-    { timestamps: true }
-);
 
 const WalletUser = mongoose.model("WalletUser", WalletUserSchema);
 const Wallet = mongoose.model("Wallet", WalletSchema);
 const Transaction = mongoose.model("Transaction", TransactionSchema);
-const FraudDetection = mongoose.model("FraudDetection", FraudDetectionSchema);
-const ApiRateLimit = mongoose.model("ApiRateLimit", ApiRateLimitSchema);
 
-export { WalletUser, Wallet, Transaction, FraudDetection, ApiRateLimit };
+
+export { WalletUser, Wallet, Transaction};
